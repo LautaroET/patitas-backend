@@ -17,7 +17,7 @@ const mascotaSchema = new mongoose.Schema(
         default: 'disponible'
         },
         descripcion: { type: String, trim: true, maxlength: 1000 },
-        imagen: [{ url: { type: String, required: true }, descripcion: { type: String } }],
+        imagen:{ type: String } ,
         caracteristicas: [String],
         esterilizado: { type: Boolean, default: false },
         tamano: { type: String, enum: ['pequeño', 'mediano', 'grande'] },
