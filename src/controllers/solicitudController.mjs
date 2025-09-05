@@ -49,18 +49,36 @@ export const listarSolicitudesAdopcionUsuario = async (req, res, next) => {
   }
 };
 
-export const cambiarEstadoSolicitudAdopcion = async (req, res, next) => {
+export const cambiarEstadoSolicitudDarEnAdopcion = async (req, res, next) => {
   try {
     const refugio = await RefugioRepository.findByUsuario(req.user.id);
     if (!refugio) return res.status(403).json({ message: 'No tienes un refugio' });
-    const updated = await SolicitudService.cambiarEstadoSolicitudAdopcion(
-      req.params.id,
-      req.body.estado,
-      refugio._id
-    );
+
+    const solicitud = await SolicitudDarEnAdopcionRepository.findById(req.params.id);
+    if (!solicitud) return res.status(404).json({ message: 'Solicitud no encontrada' });
+
+    // corroborar que la solicitud pertenece a SU refugio
+    if (solicitud.refugio.toString() !== refugio._id.toString()) {
+      return res.status(403).json({ message: 'Esta solicitud no es de tu refugio' });
+    }
+
+    if (!['aceptada', 'rechazada'].includes(req.body.estado)) {
+      return res.status(400).json({ message: 'Estado inválido' });
+    }
+
+    const updated = await SolicitudDarEnAdopcionRepository.update(solicitud._id, { estado: req.body.estado });
+
+    if (req.body.estado === 'aceptada') {
+      await MascotaRepository.create({
+        ...solicitud.datosMascota,
+        refugio: refugio._id,
+        estado: 'disponible',
+      });
+    }
+
     res.json(updated);
   } catch (err) {
-    next(err);
+    next(err); // ← esto es el 500 que ves
   }
 };
 
