@@ -66,9 +66,12 @@ export const cambiarEstadoSolicitudAdopcion = async (req, res, next) => {
 
 export const crearSolicitudDarEnAdopcion = async (req, res, next) => {
   try {
+    const { refugioId, datosMascota, mensajeDelUsuario } = req.body; // ✅ Extraemos los campos del body
     const solicitud = await SolicitudService.crearSolicitudDarEnAdopcion({
       usuarioId: req.user.id,
-      ...req.body
+      refugioId, // ✅ Pasamos refugioId
+      datosMascota, // ✅ Pasamos datosMascota
+      mensaje: mensajeDelUsuario // ✅ Pasamos el mensaje
     });
     res.status(201).json(solicitud);
   } catch (err) {
