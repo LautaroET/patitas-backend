@@ -6,9 +6,12 @@ class RefugioRepository extends IRepository {
     super(Refugio);
   }
 
-  async findByUsuario(usuarioId) {
-    return this.model.findOne({ usuario: usuarioId });
-  }
+ async findByUsuario(usuarioId) {
+  const refugio = await this.model.findOne({ usuario: usuarioId });
+  console.log("🔍 Buscando refugio para usuario:", usuarioId);
+  console.log("🔍 Refugio encontrado:", refugio?._id);
+  return refugio;
+}
 }
 
 export default new RefugioRepository();
