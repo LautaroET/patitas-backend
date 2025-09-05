@@ -18,3 +18,13 @@ export const register = async (req, res, next) => {
         next(error);
     }
 };
+
+// ✅ Nuevo: obtener usuario autenticado
+export const me = async (req, res, next) => {
+  try {
+    const user = await authService.getUserById(req.user.id); // req.user viene del middleware authenticate
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
