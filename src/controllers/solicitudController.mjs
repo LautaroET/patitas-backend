@@ -1,5 +1,8 @@
 import SolicitudService from '../services/solicitudService.mjs';
 import RefugioRepository from '../repositories/RefugioRepository.mjs';
+import SolicitudService from '../services/solicitudService.mjs';
+import RefugioRepository from '../repositories/RefugioRepository.mjs';
+import MascotaRepository from '../repositories/MascotaRepository.mjs';
 
 export const crearSolicitudAdopcion = async (req, res, next) => {
   try {
