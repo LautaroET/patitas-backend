@@ -99,16 +99,20 @@ export const listarSolicitudesDarEnAdopcionUsuario = async (req, res, next) => {
   }
 };
 
+
+
 export const cambiarEstadoSolicitudDarEnAdopcion = async (req, res, next) => {
   try {
     const refugio = await RefugioRepository.findByUsuario(req.user.id);
     if (!refugio) return res.status(403).json({ message: 'No tienes un refugio' });
 
+    // llamamos al Service
     const updated = await SolicitudService.cambiarEstadoSolicitudDarEnAdopcion(
       req.params.id,
       req.body.estado,
       refugio._id
     );
+
     res.json(updated);
   } catch (err) {
     next(err);
