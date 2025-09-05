@@ -84,5 +84,5 @@ async cambiarEstadoSolicitudDarEnAdopcion(solicitudId, nuevoEstado, refugioId) {
 
     return updated;
   }
-
+}
 export default new SolicitudService();
