@@ -6,7 +6,9 @@ export const crearMascotaValidator = [
   body('edad').optional().isInt({ min: 0 }),
   body('estado').optional().isIn(['disponible', 'en proceso de adopción', 'adoptado']),
   body('descripcion').optional().isLength({ max: 500 }),
-  body('imagen').optional().isURL()
+  body('imagen').optional().isURL(),
+  // ✅ Añade la validación para el tamaño
+  body('tamano').optional().isIn(['pequeño', 'mediano', 'grande']) 
 ];
 
 export const actualizarMascotaValidator = [
@@ -15,5 +17,6 @@ export const actualizarMascotaValidator = [
   body('edad').optional().isInt({ min: 0 }),
   body('estado').optional().isIn(['disponible', 'en proceso de adopción', 'adoptado']),
   body('descripcion').optional().isLength({ max: 500 }),
-  body('imagen').optional().isURL()
+  body('imagen').optional().isURL(),
+  body('tamano').optional().isIn(['pequeño', 'mediano', 'grande'])
 ];
