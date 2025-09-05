@@ -51,6 +51,10 @@ export const listarSolicitudesAdopcionUsuario = async (req, res, next) => {
 
 export const cambiarEstadoSolicitudDarEnAdopcion = async (req, res, next) => {
   try {
+
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'ID inválido' });
+    }
     const refugio = await RefugioRepository.findByUsuario(req.user.id);
     if (!refugio) return res.status(403).json({ message: 'No tienes un refugio' });
 
