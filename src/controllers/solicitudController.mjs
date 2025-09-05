@@ -3,12 +3,25 @@ import RefugioRepository from '../repositories/RefugioRepository.mjs';
 
 export const crearSolicitudAdopcion = async (req, res, next) => {
   try {
-    const { mascotaId, mensaje } = req.body;
-    const solicitud = await SolicitudService.crearSolicitudAdopcion({
-      usuarioId: req.user.id,
-      mascotaId,
-      mensaje
-    });
+    const { mascota: mascotaId, datosSolicitante, motivosAdopcion } = req.body;
+
+    // 1. Encontrar la mascota para obtener el ID del refugio
+    const mascota = await MascotaRepository.findById(mascotaId);
+    if (!mascota) {
+        return res.status(404).json({ message: 'Mascota no encontrada' });
+    }
+
+    // 2. Preparar el payload completo para el servicio
+    const payload = {
+        usuarioId: req.user.id,
+        mascotaId: mascota._id, // Usamos el ID de la mascota encontrada
+        refugioId: mascota.refugio, // ✅ Obtenemos el ID del refugio de la mascota
+        datosSolicitante, // ✅ Pasamos los datos del solicitante
+        motivosAdopcion, // ✅ Pasamos los motivos de adopción
+    };
+
+    // 3. Llamar al servicio con el payload completo
+    const solicitud = await SolicitudService.crearSolicitudAdopcion(payload);
     res.status(201).json(solicitud);
   } catch (err) {
     next(err);
