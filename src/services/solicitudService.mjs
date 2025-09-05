@@ -4,20 +4,21 @@ import MascotaRepository from '../repositories/MascotaRepository.mjs';
 import RefugioRepository from '../repositories/RefugioRepository.mjs';
 
 class SolicitudService {
-  async crearSolicitudAdopcion({ usuarioId, mascotaId, mensaje }) {
-    const mascota = await MascotaRepository.findById(mascotaId);
-    if (!mascota) throw new Error('Mascota no encontrada');
+  async crearSolicitudAdopcion({ usuarioId, mascotaId, refugioId, datosSolicitante, motivosAdopcion }) {
+  const mascota = await MascotaRepository.findById(mascotaId);
+  if (!mascota) throw new Error('Mascota no encontrada');
 
-    const yaExiste = await SolicitudAdopcionRepository.existeSolicitud(usuarioId, mascotaId);
-    if (yaExiste) throw new Error('Ya has enviado una solicitud para esta mascota');
+  const yaExiste = await SolicitudAdopcionRepository.existeSolicitud(usuarioId, mascotaId);
+  if (yaExiste) throw new Error('Ya has enviado una solicitud para esta mascota');
 
-    return await SolicitudAdopcionRepository.create({
-      usuario: usuarioId,
-      mascota: mascotaId,
-      refugio: mascota.refugio,
-      mensaje
-    });
-  }
+  return await SolicitudAdopcionRepository.create({
+    usuario: usuarioId,
+    mascota: mascotaId,
+    refugio: refugioId,
+    datosSolicitante,
+    motivosAdopcion
+  });
+}
 
   async listarSolicitudesAdopcionPorRefugio(refugioId) {
     return await SolicitudAdopcionRepository.findByRefugio(refugioId);
@@ -29,6 +30,9 @@ class SolicitudService {
 
   async cambiarEstadoSolicitudAdopcion(solicitudId, nuevoEstado, refugioId) {
     const solicitud = await SolicitudAdopcionRepository.findById(solicitudId);
+console.log("🔍 Comparando:");
+console.log("  - solicitud.refugio:", solicitud.refugio.toString());
+console.log("  - refugioId:", refugioId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
     if (solicitud.refugio.toString() !== refugioId) throw new Error('No autorizado');
     if (!['aceptada', 'rechazada'].includes(nuevoEstado)) throw new Error('Estado inválido');
