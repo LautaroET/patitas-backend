@@ -16,8 +16,7 @@ class UserRepository extends IRepository {
 }
 
 async findById(id) {
-    return this.model.findById(id).populate('role');
+    return this.model.findById(id);
   }
-}
 
 export default new UserRepository();
