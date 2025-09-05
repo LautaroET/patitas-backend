@@ -11,7 +11,7 @@ const solicitudDarEnAdopcionSchema = new mongoose.Schema(
       genero: { type: String, enum: ['macho', 'hembra'], required: true },
       edad: { type: Number, min: 0, max: 30 },
       descripcion: { type: String, trim: true, maxlength: 1000 },
-      fotos: [{ url: { type: String, required: true }, descripcion: { type: String } }],
+      imagen: {type:String},
       caracteristicas: [String],
       esterilizado: { type: Boolean, default: false },
       tamano: { type: String, enum: ['pequeño', 'mediano', 'grande'] },
