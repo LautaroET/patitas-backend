@@ -4,7 +4,8 @@ import {
   eliminarRefugio,
   listarRefugios,
   miRefugio,
-  obtenerRefugioPorId
+  obtenerRefugioPorId,
+  actualizarMiRefugio
 } from '../controllers/refugioController.mjs';
 import { authenticate, authorize } from '../middleware/auth.mjs';
 import { isOwnerOfRefugio } from '../middleware/ownership.mjs';
@@ -25,5 +26,6 @@ router.get('/:id', obtenerRefugioPorId);
 router.post('/', authenticate, authorize('comun'), crearRefugioValidator, validate, crearRefugio);
 router.delete('/', authenticate, authorize('refugio'), isOwnerOfRefugio, eliminarRefugio);
 router.get('/yo/mi', authenticate, authorize('refugio'), isOwnerOfRefugio, miRefugio);
+router.put('/yo', authenticate, authorize('refugio'), isOwnerOfRefugio, actualizarMiRefugio);
 
 export default router;
