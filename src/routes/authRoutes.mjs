@@ -1,9 +1,10 @@
 import express from 'express';
 import rateLimit from 'express-rate-limit';
-import { register, login } from '../controllers/authController.mjs';
+import { register, login, me } from '../controllers/authController.mjs';
 import { registerValidator, loginValidator } from '../validators/authValidator.mjs';
 import { validationResult } from 'express-validator';
 import { authenticate } from '../middleware/auth.mjs';
+
 
 const router = express.Router();
 
