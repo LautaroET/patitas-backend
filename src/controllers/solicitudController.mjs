@@ -101,35 +101,17 @@ export const listarSolicitudesDarEnAdopcionUsuario = async (req, res, next) => {
 
 export const cambiarEstadoSolicitudDarEnAdopcion = async (req, res, next) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: 'ID inválido' });
-    }
     const refugio = await RefugioRepository.findByUsuario(req.user.id);
     if (!refugio) return res.status(403).json({ message: 'No tienes un refugio' });
 
-    const solicitud = await SolicitudDarEnAdopcionRepository.findById(req.params.id);
-    if (!solicitud) return res.status(404).json({ message: 'Solicitud no encontrada' });
-
-    if (solicitud.refugio.toString() !== refugio._id.toString()) {
-      return res.status(403).json({ message: 'Esta solicitud no es de tu refugio' });
-    }
-
-    if (!['aceptada', 'rechazada'].includes(req.body.estado)) {
-      return res.status(400).json({ message: 'Estado inválido' });
-    }
-
-    const updated = await SolicitudDarEnAdopcionRepository.update(solicitud._id, { estado: req.body.estado });
-
-    if (req.body.estado === 'aceptada') {
-      await MascotaRepository.create({
-        ...solicitud.datosMascota,
-        refugio: refugio._id,
-        estado: 'disponible',
-      });
-    }
-
+    const updated = await SolicitudService.cambiarEstadoSolicitudDarEnAdopcion(
+      req.params.id,
+      req.body.estado,
+      refugio._id
+    );
     res.json(updated);
   } catch (err) {
     next(err);
   }
 };
+
