@@ -20,6 +20,6 @@ export const crearSolicitudDarEnAdopcionValidator = [
   body('datosMascota.especie').isIn(['perro', 'gato', 'conejo', 'ave', 'otro']),
   body('datosMascota.edad').optional().isInt({ min: 0 }),
   body('datosMascota.descripcion').optional().isLength({ max: 500 }),
-  body('datosMascota.imagen').optional().isURL(),
-  body('mensaje').optional().isLength({ max: 500 })
+  body('datosMascota.fotos').optional().isURL(), 
+  body('mensajeDelUsuario').optional().isLength({ max: 500 }) 
 ];
