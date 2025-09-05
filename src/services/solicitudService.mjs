@@ -34,7 +34,7 @@ console.log("🔍 Comparando:");
 console.log("  - solicitud.refugio:", solicitud.refugio.toString());
 console.log("  - refugioId:", refugioId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
-    if (solicitud.refugio.toString() !== refugioId) throw new Error('No autorizado');
+    if (solicitud.refugio.toString() !== refugioId.toString()) throw new Error('No autorizado');
     if (!['aceptada', 'rechazada'].includes(nuevoEstado)) throw new Error('Estado inválido');
 
     const updated = await SolicitudAdopcionRepository.update(solicitudId, { estado: nuevoEstado });
