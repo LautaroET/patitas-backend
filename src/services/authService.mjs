@@ -47,6 +47,14 @@ class AuthService {
         return { user: userResponse, token };
     }
 
+    async getUserById(id) {
+    const user = await UserRepository.findById(id);
+    if (!user) throw new Error('Usuario no encontrado');
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    return userResponse;
+  }
+
     generateToken(user) {
         return jwt.sign(
         { id: user._id, role: user.role, tipo: user.tipo },
