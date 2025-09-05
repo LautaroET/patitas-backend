@@ -13,10 +13,10 @@ class UserRepository extends IRepository {
   async findByUsername(username) {
     return this.model.findOne({ username });
   }
-}
 
-async findById(id) {
+  async findById(id) {
     return this.model.findById(id);
   }
+}
 
 export default new UserRepository();
