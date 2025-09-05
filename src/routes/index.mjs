@@ -5,6 +5,7 @@ import mascotaRoutes from './mascotaRoutes.mjs';
 import roleRoutes from './roleRoutes.mjs';
 import solicitudRoutes from './solicitudRoutes.mjs';
 
+
 const router = express.Router();
 
 router.use('/auth', authRoutes);

@@ -4,6 +4,12 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import routes from './src/routes/index.mjs';
 //import swaggerDocs from './src/docs/swagger.mjs';
+import uploadRoutes from './src/routes/uploadRoutes.mjs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
 
     dotenv.config();
     const app = express();
@@ -23,9 +29,14 @@ import routes from './src/routes/index.mjs';
     app.use(cors(corsOptions));
     app.use(express.json());
 
+
+    // Servir archivos estáticos
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
     /* ---------- Routes ---------- */
-app.use('/api', routes);
-//swaggerDocs(app);
+        app.use('/api', routes);
+        app.use('/api/upload', uploadRoutes);
+        //swaggerDocs(app);
 
     /* ---------- Health checks ---------- */
     app.get('/health', (_req, res) => res.json({ status: 'OK', timestamp: new Date() }));
