@@ -46,7 +46,7 @@ console.log("  - refugioId:", refugioId);
     return updated;
   }
 
-  async crearSolicitudDarEnAdopcion({ usuarioId, refugioId, datosMascota, mensajeDelUsuario }) { // ✅ Cambia 'mensaje' a 'mensajeDelUsuario'
+  async crearSolicitudDarEnAdopcion({ usuarioId, refugioId, datosMascota, mensajeDelUsuario }) {
     const yaExiste = await SolicitudDarEnAdopcionRepository.existeSolicitudPendiente(usuarioId, refugioId);
     if (yaExiste) throw new Error('Ya tienes una solicitud pendiente con este refugio');
 
@@ -66,10 +66,10 @@ console.log("  - refugioId:", refugioId);
     return await SolicitudDarEnAdopcionRepository.findByUsuario(usuarioId);
   }
 
-  async cambiarEstadoSolicitudDarEnAdopcion(solicitudId, nuevoEstado, refugioId) {
+async cambiarEstadoSolicitudDarEnAdopcion(solicitudId, nuevoEstado, refugioId) {
     const solicitud = await SolicitudDarEnAdopcionRepository.findById(solicitudId);
     if (!solicitud) throw new Error('Solicitud no encontrada');
-    if (solicitud.refugio.toString() !== refugioId) throw new Error('No autorizado');
+    if (solicitud.refugio.toString() !== refugioId.toString()) throw new Error('No autorizado');
     if (!['aceptada', 'rechazada'].includes(nuevoEstado)) throw new Error('Estado inválido');
 
     const updated = await SolicitudDarEnAdopcionRepository.update(solicitudId, { estado: nuevoEstado });
@@ -84,6 +84,5 @@ console.log("  - refugioId:", refugioId);
 
     return updated;
   }
-}
 
 export default new SolicitudService();
