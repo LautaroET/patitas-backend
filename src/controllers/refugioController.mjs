@@ -48,3 +48,11 @@ export const obtenerRefugioPorId = async (req, res, next) => {
     next(err);
   }
 };
+export const actualizarMiRefugio = async (req, res, next) => {
+  try {
+    const refugio = await refugioService.actualizarMiRefugio(req.body, req.user.id);
+    res.json(refugio);
+  } catch (err) {
+    next(err);
+  }
+};
