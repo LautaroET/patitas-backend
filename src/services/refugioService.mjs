@@ -8,6 +8,22 @@ import RoleRepository from '../repositories/RoleRepository.mjs';
 import logger from '../utils/logger.mjs';
 
 class RefugioService {
+async crearRefugio(data, userId) {
+    const user = await UserRepository.findById(userId);
+    if (!user || user.tipo !== 'comun') throw new Error('Solo usuarios comunes pueden crear refugio');
+
+    if (await RefugioRepository.findByUsuario(userId))
+      throw new Error('Ya tienes un refugio registrado');
+
+    const refugio = await RefugioRepository.create({ ...data, usuario: userId });
+
+    const refugioRole = await RoleRepository.findByName('refugio');
+    user.role = refugioRole._id;
+    user.tipo = 'refugio';
+    await UserRepository.update(user._id, { role: refugioRole._id, tipo: 'refugio' });
+
+    return refugio;
+  }
     async eliminarRefugio(userId) {
         const session = await mongoose.startSession();
         session.startTransaction();
