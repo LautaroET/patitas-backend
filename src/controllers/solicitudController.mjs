@@ -51,7 +51,6 @@ export const listarSolicitudesAdopcionUsuario = async (req, res, next) => {
 
 export const cambiarEstadoSolicitudDarEnAdopcion = async (req, res, next) => {
   try {
-
     if (!mongoose.isValidObjectId(req.params.id)) {
       return res.status(400).json({ message: 'ID inválido' });
     }
@@ -61,7 +60,6 @@ export const cambiarEstadoSolicitudDarEnAdopcion = async (req, res, next) => {
     const solicitud = await SolicitudDarEnAdopcionRepository.findById(req.params.id);
     if (!solicitud) return res.status(404).json({ message: 'Solicitud no encontrada' });
 
-    // corroborar que la solicitud pertenece a SU refugio
     if (solicitud.refugio.toString() !== refugio._id.toString()) {
       return res.status(403).json({ message: 'Esta solicitud no es de tu refugio' });
     }
@@ -82,7 +80,7 @@ export const cambiarEstadoSolicitudDarEnAdopcion = async (req, res, next) => {
 
     res.json(updated);
   } catch (err) {
-    next(err); // ← esto es el 500 que ves
+    next(err);
   }
 };
 
