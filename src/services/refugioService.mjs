@@ -24,6 +24,9 @@ async crearRefugio(data, userId) {
 
     return refugio;
   }
+async listarRefugios() {
+    return RefugioRepository.findAll();
+  }
     async eliminarRefugio(userId) {
         const session = await mongoose.startSession();
         session.startTransaction();
