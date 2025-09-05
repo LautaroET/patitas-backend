@@ -6,81 +6,94 @@ import SolicitudDarEnAdopcionRepository from '../repositories/SolicitudDarEnAdop
 import UserRepository from '../repositories/UserRepository.mjs';
 import RoleRepository from '../repositories/RoleRepository.mjs';
 import logger from '../utils/logger.mjs';
+import ApiError from '../utils/ApiError.mjs';
 
 class RefugioService {
-async crearRefugio(data, userId) {
-    const user = await UserRepository.findById(userId);
-    if (!user || user.tipo !== 'comun') throw new Error('Solo usuarios comunes pueden crear refugio');
+    async crearRefugio(data, userId) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
 
-    if (await RefugioRepository.findByUsuario(userId))
-      throw new Error('Ya tienes un refugio registrado');
+        try {
+            const user = await UserRepository.findById(userId);
+            if (!user || user.tipo !== 'comun') {
+                throw new ApiError('Solo usuarios comunes pueden crear un refugio', 403);
+            }
 
-    const refugio = await RefugioRepository.create({ ...data, usuario: userId });
+            if (await RefugioRepository.findByUsuario(userId)) {
+                throw new ApiError('Ya tienes un refugio registrado', 409);
+            }
 
-    const refugioRole = await RoleRepository.findByName('refugio');
-    user.role = refugioRole._id;
-    user.tipo = 'refugio';
-    await UserRepository.update(user._id, { role: refugioRole._id, tipo: 'refugio' });
+            const refugio = await RefugioRepository.create({ ...data, usuario: userId }, { session });
 
-    return refugio;
-  }
-async listarRefugios() {
-    return RefugioRepository.findAll();
-  }
-    async eliminarRefugio(userId) {
-        const session = await mongoose.startSession();
-        session.startTransaction();
+            const refugioRole = await RoleRepository.findByName('refugio');
+            await UserRepository.update(
+                userId,
+                { role: refugioRole._id, tipo: 'refugio' },
+                { session }
+            );
 
-        try {
-        const refugio = await RefugioRepository.findByUsuario(userId);
-        if (!refugio) throw new Error('No tienes un refugio asociado');
+            await session.commitTransaction();
+            return refugio;
+        } catch (err) {
+            await session.abortTransaction();
+            throw err;
+        } finally {
+            session.endSession();
+        }
+    }
 
-        // 1. _ids de mascotas del refugio
-        const mascotas = await MascotaRepository.findAll(
-            { refugio: refugio._id },
-            { session, projection: { _id: 1 } }
-        );
-        const mascotaIds = mascotas.map(m => m._id);
+    async listarRefugios() {
+        return RefugioRepository.findAll();
+    }
+    
+    async eliminarRefugio(userId) {
+        const session = await mongoose.startSession();
+        session.startTransaction();
 
-        // 2. Borrar solicitudes ADOPCIÓN vinculadas a esas mascotas
-        if (mascotaIds.length) {
-            await SolicitudAdopcionRepository.deleteMany(
-            { mascota: { $in: mascotaIds } },
-            { session }
-            );
-        }
+        try {
+        const refugio = await RefugioRepository.findByUsuario(userId);
+        if (!refugio) throw new Error('No tienes un refugio asociado');
 
-        // 3. Borrar solicitudes DAR-EN-ADOPCIÓN vinculadas al refugio
-        await SolicitudDarEnAdopcionRepository.deleteMany(
-            { refugio: refugio._id },
-            { session }
-        );
+        const mascotas = await MascotaRepository.findAll(
+            { refugio: refugio._id },
+            { session, projection: { _id: 1 } }
+        );
+        const mascotaIds = mascotas.map(m => m._id);
 
-        // 4. Borrar mascotas del refugio
-        await MascotaRepository.deleteMany({ refugio: refugio._id }, { session });
+        if (mascotaIds.length) {
+            await SolicitudAdopcionRepository.deleteMany(
+            { mascota: { $in: mascotaIds } },
+            { session }
+            );
+        }
 
-        // 5. Borrar refugio
-        await RefugioRepository.delete(refugio._id, { session });
+        await SolicitudDarEnAdopcionRepository.deleteMany(
+            { refugio: refugio._id },
+            { session }
+        );
 
-        // 6. Revertir rol usuario
-        const comunRole = await RoleRepository.findByName('comun');
-        await UserRepository.update(
-            userId,
-            { role: comunRole._id, tipo: 'comun' },
-            { session }
-        );
+        await MascotaRepository.deleteMany({ refugio: refugio._id }, { session });
 
-        await session.commitTransaction();
-        logger.info(`Refugio ${refugio._id} + mascotas + solicitudes (ambos tipos) borradas`);
-        return { message: 'Refugio, mascotas y solicitudes eliminadas permanentemente' };
-        } catch (err) {
-        await session.abortTransaction();
-        logger.error('Error hard-eliminando refugio', err);
-        throw err;
-        } finally {
-        session.endSession();
-        }
-    }
-    }
+        await RefugioRepository.delete(refugio._id, { session });
+
+        const comunRole = await RoleRepository.findByName('comun');
+        await UserRepository.update(
+            userId,
+            { role: comunRole._id, tipo: 'comun' },
+            { session }
+        );
+
+        await session.commitTransaction();
+        logger.info(`Refugio ${refugio._id} + mascotas + solicitudes (ambos tipos) borradas`);
+        return { message: 'Refugio, mascotas y solicitudes eliminadas permanentemente' };
+        } catch (err) {
+        await session.abortTransaction();
+        logger.error('Error hard-eliminando refugio', err);
+        throw err;
+        } finally {
+        session.endSession();
+        }
+    }
+}
 
 export default new RefugioService();

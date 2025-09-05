@@ -28,11 +28,11 @@ const validate = (req, res, next) => {
 router.post('/adopcion', authenticate, authorize('comun'), crearSolicitudAdopcionValidator, validate, crearSolicitudAdopcion);
 router.get('/adopcion/refugio', authenticate, authorize('refugio'), listarSolicitudesAdopcionRefugio);
 router.get('/adopcion/usuario', authenticate, authorize('comun'), listarSolicitudesAdopcionUsuario);
-router.patch('/adopcion/:id', authenticate, authorize('refugio'), cambiarEstadoValidator, validate, cambiarEstadoSolicitudAdopcion);
+router.put('/adopcion/:id', authenticate, authorize('refugio'), cambiarEstadoValidator, validate, cambiarEstadoSolicitudAdopcion);
 
 router.post('/dar-en-adopcion', authenticate, authorize('comun'), crearSolicitudDarEnAdopcionValidator, validate, crearSolicitudDarEnAdopcion);
 router.get('/dar-en-adopcion/refugio', authenticate, authorize('refugio'), listarSolicitudesDarEnAdopcionRefugio);
 router.get('/dar-en-adopcion/usuario', authenticate, authorize('comun'), listarSolicitudesDarEnAdopcionUsuario);
-router.patch('/dar-en-adopcion/:id', authenticate, authorize('refugio'), cambiarEstadoValidator, validate, cambiarEstadoSolicitudDarEnAdopcion);
+router.put('/dar-en-adopcion/:id', authenticate, authorize('refugio'), cambiarEstadoValidator, validate, cambiarEstadoSolicitudDarEnAdopcion);
 
 export default router;
