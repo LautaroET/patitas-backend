@@ -46,7 +46,7 @@ console.log("  - refugioId:", refugioId);
     return updated;
   }
 
-  async crearSolicitudDarEnAdopcion({ usuarioId, refugioId, datosMascota, mensaje }) {
+  async crearSolicitudDarEnAdopcion({ usuarioId, refugioId, datosMascota, mensajeDelUsuario }) { // ✅ Cambia 'mensaje' a 'mensajeDelUsuario'
     const yaExiste = await SolicitudDarEnAdopcionRepository.existeSolicitudPendiente(usuarioId, refugioId);
     if (yaExiste) throw new Error('Ya tienes una solicitud pendiente con este refugio');
 
@@ -54,9 +54,9 @@ console.log("  - refugioId:", refugioId);
       usuario: usuarioId,
       refugio: refugioId,
       datosMascota,
-      mensajeDelUsuario: mensaje
+      mensajeDelUsuario 
     });
-  }
+}
 
   async listarSolicitudesDarEnAdopcionPorRefugio(refugioId) {
     return await SolicitudDarEnAdopcionRepository.findByRefugio(refugioId);
