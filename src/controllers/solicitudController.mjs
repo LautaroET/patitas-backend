@@ -71,7 +71,7 @@ export const crearSolicitudDarEnAdopcion = async (req, res, next) => {
       usuarioId: req.user.id,
       refugioId, // ✅ Pasamos refugioId
       datosMascota, // ✅ Pasamos datosMascota
-      mensaje: mensajeDelUsuario // ✅ Pasamos el mensaje
+      mensaje: mensajeDelUsuario // ✅ Ahora el nombre de la variable coincide con el del servicio
     });
     res.status(201).json(solicitud);
   } catch (err) {
